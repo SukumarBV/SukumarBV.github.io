@@ -149,7 +149,7 @@ function About() {
             </p>
           </div>
           <div className="space-y-3">
-            <InfoItem icon="📍" label="Location" value="Mysuru, Karnataka, India" />
+            <InfoItem icon="📍" label="Location" value="Bengaluru, Karnataka, India" />
             <InfoItem icon="📧" label="Email" value="sukumarbv27@gmail.com" />
             <InfoItem icon="📱" label="Phone" value="+91 9380964393" />
             <InfoItem icon="🎓" label="Status" value="3rd Year Engineering Student" />
