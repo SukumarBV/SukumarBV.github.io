@@ -177,23 +177,19 @@ function Skills() {
   const skillCategories = [
     {
       title: "Languages",
-      skills: ["Python", "Java", "JavaScript", "SQL"],
-      icon: "💻"
+      skills: ["Python", "Java", "JavaScript", "SQL"]
     },
     {
       title: "AI / Machine Learning",
-      skills: ["Natural Language Processing (NLP)", "Text-to-SQL", "Computer Vision", "Scikit-learn", "CVZone"],
-      icon: "🤖"
+      skills: ["Natural Language Processing (NLP)", "Text-to-SQL", "Computer Vision", "Scikit-learn", "CVZone"]
     },
     {
       title: "Frameworks & Libraries",
-      skills: ["FastAPI", "React", "SQLAlchemy", "OpenCV", "PyAutoGUI"],
-      icon: "⚡"
+      skills: ["FastAPI", "React", "SQLAlchemy", "OpenCV", "PyAutoGUI"]
     },
     {
       title: "Databases & DevOps",
-      skills: ["PostgreSQL", "Docker", "DockerCompose", "Git & GitHub", "VS Code"],
-      icon: "🗄️"
+      skills: ["PostgreSQL", "Docker", "DockerCompose", "Git & GitHub", "VS Code"]
     }
   ];
 
