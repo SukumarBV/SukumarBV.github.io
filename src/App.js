@@ -1,669 +1,869 @@
-import { motion } from "framer-motion";
-import { Github, Linkedin, Mail, ArrowRight, ExternalLink, Calendar } from "lucide-react";
-import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import { useState, useEffect, useRef } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import {
+  Github, Linkedin, Mail, ExternalLink, X, ChevronDown,
+  Calendar, Code2, Cpu, Database, Globe, Terminal, Layers,
+  Download, Menu, MapPin, Award, BookOpen, ArrowUpRight, 
+  Target, Lightbulb, CheckCircle, Flag, TrendingUp, Settings
+} from "lucide-react";
 import "./App.css";
 
-/* ---------------- MAIN APP ---------------- */
-export default function App() {
-  return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/projects/traffic-mlops" element={<TrafficProject />} />
-        <Route path="/projects/nlp-query-engine" element={<NLPProject />} />
-        <Route path="/projects/recommendation-app" element={<RecommendationProject />} />
-        <Route path="/projects/lung-cancer" element={<LungCancerProject />} />
-      </Routes>
-    </Router>
-  );
-}
+// ─── PHOTO (embedded) ────────────────────────────────────────────────────────
+const PHOTO_SRC = "me.jpeg";
 
-/* ---------------- HOME PAGE ---------------- */
-function Home() {
+// ─── DATA ─────────────────────────────────────────────────────────────────────
+
+const PROJECTS = [
+  {
+    id: "aqms",
+    title: "AI-Powered Air Quality Monitoring System",
+    subtitle: "ISRO Project Internship",
+    date: "Nov 2025 – Present",
+    tags: ["ISRO", "Ongoing", "Edge AI"],
+    category: "Systems Engineering",
+    description:
+      "Contributing in a Systems Engineering role as a Project Intern to develop a next-generation edge-computing AQMS for ISRO, combining LSTM-based forecasting with a deterministic Chemical Transport Model and ESP32-S3 microcontrollers.",
+    problem:
+      "ISRO needed a smarter air quality monitoring system that could predict real-time pollution levels at the edge — existing solutions lacked temporal forecasting and relied on legacy physics models.",
+    solution:
+      "Built a hybrid pipeline: a deterministic Chemical Transport Model (CTM) using operator splitting produces physics-validated outputs that feed a temporal LSTM network. An ESP32-S3 microcontroller with I²C/UART bridges ensures non-blocking sensor data delivery.",
+    features: [
+      "Hybrid LSTM + Chemical Transport Model for atmospheric prediction",
+      "Operator-splitting approach for cleaner atmospheric data simulation",
+      "ESP32-S3 microcontroller with I²C/UART expansion bridges",
+      "Zero-loss, non-blocking sensor data pipeline",
+    ],
+    challenges: [
+      "Migrating from a legacy PINN to a deterministic CTM while preserving accuracy",
+      "Integrating embedded hardware with ML pipeline reliably at the edge",
+    ],
+    impact: "Contributing to ISRO's national air-quality initiative, enabling edge-level pollution forecasting for smart city integration.",
+    tech: ["Python", "LSTM", "PyTorch", "SciPy", "ESP32-S3", "C++", "I2C/UART"],
+    github: "https://github.com/SukumarBV",
+    live: null,
+    featured: true,
+  },
+  {
+    id: "traffic-mlops",
+    title: "Automated Traffic Congestion MLOps",
+    subtitle: "Production ML System",
+    date: "Jan 2026",
+    tags: ["MLOps", "FastAPI", "Deployed"],
+    category: "MLOps",
+    description:
+      "End-to-end MLOps pipeline for real-time Bengaluru traffic congestion prediction — stateless REST inference, simulated event-time replay, a live monitoring dashboard, and independent cloud deployment.",
+    problem:
+      "Traffic congestion prediction systems typically lack production-grade infrastructure: no drift detection, no model versioning, and no monitoring. A raw model without an MLOps shell is not deployable.",
+    solution:
+      "Designed a FastAPI inference service with replayed historical data simulating live event streams. Built a Streamlit monitoring dashboard tracking rolling predicted vs observed trends, deployed independently on Hugging Face Spaces.",
+    features: [
+      "Stateless FastAPI REST API for low-latency ML inference",
+      "Simulated live traffic pipeline with event-time replay",
+      "Streamlit production monitoring dashboard",
+      "Independent cloud microservice architecture",
+    ],
+    challenges: [
+      "Simulating realistic event-time streams from historical batch data",
+      "Balancing inference latency with model complexity in a free-tier environment",
+    ],
+    impact: "Deployed live — demonstrates real-world MLOps architecture with separated inference and monitoring services.",
+    tech: ["FastAPI", "Pandas", "Streamlit", "Docker", "Hugging Face", "Scikit-learn"],
+    github: "https://github.com/SukumarBV/bengaluru-traffic-mlops",
+    live: "https://bengaluru-traffic-mlops.onrender.com",
+    featured: true,
+  },
+  {
+    id: "nlp-query-engine",
+    title: "AI-Powered NLP Query Engine",
+    subtitle: "Text-to-SQL Platform",
+    date: "Oct 2025",
+    tags: ["LLM", "Full-Stack", "Docker"],
+    category: "Full-Stack AI",
+    description:
+      "A full-stack Text-to-SQL platform powered by Gemini with dynamic schema discovery and hybrid semantic + keyword search. Fully containerized with Docker Compose.",
+    problem:
+      "Non-technical users can't query databases directly. Natural language interfaces exist, but most hardcode the schema, breaking on schema drift and limiting multi-table reasoning.",
+    solution:
+      "Built a dynamic schema discovery module that introspects the DB at runtime and injects the schema into Gemini prompts. Combined keyword search with semantic vector search for query disambiguation.",
+    features: [
+      "Gemini-powered natural language to SQL conversion",
+      "Dynamic schema discovery — no hardcoded table definitions",
+      "Hybrid semantic + keyword search for query disambiguation",
+      "React frontend for natural query building",
+    ],
+    challenges: [
+      "Handling schema drift and multi-table joins in LLM prompts",
+      "Preventing SQL injection while allowing flexible query generation",
+    ],
+    impact: "Enables any user to query relational databases in plain English — applicable across analytics, BI, and internal tools.",
+    tech: ["Python", "FastAPI", "React", "Docker", "PostgreSQL", "Gemini AI"],
+    github: "https://github.com/SukumarBV/NLPQueryEngine",
+    live: null,
+    featured: true,
+  },
+  {
+    id: "recommendation-app",
+    title: "Product Recommendation App",
+    subtitle: "Collaborative Filtering System",
+    date: "Nov 2025",
+    tags: ["ML", "Flask", "Deployed"],
+    category: "AI/ML",
+    description:
+      "A Flask app comparing content-based and collaborative filtering recommender systems, using TF-IDF + cosine similarity for item recommendations and KNN for user-behavior-based suggestions.",
+    problem:
+      "E-commerce recommendation systems are often black boxes. This project makes the tradeoffs between content-based and collaborative filtering visible and interactive.",
+    solution:
+      "Built two recommendation engines side-by-side: a content-based system using TF-IDF + cosine similarity on product descriptions, and a collaborative system using a user-item matrix + KNN.",
+    features: [
+      "Side-by-side content-based vs collaborative filtering comparison",
+      "TF-IDF with cosine similarity for product metadata",
+      "KNN user-item matrix for behavior-based suggestions",
+      "Interactive Flask web interface",
+    ],
+    challenges: [
+      "Sparse user-item matrices degrading recommendation quality",
+      "Addressing the cold-start problem for new users",
+    ],
+    impact: "Demonstrates recommendation system tradeoffs clearly — useful as both a learning resource and a deployable microservice.",
+    tech: ["Python", "Flask", "Scikit-learn", "TF-IDF", "KNN", "Pandas"],
+    github: "https://github.com/SukumarBV/product-recommendation-app",
+    live: null,
+    featured: false,
+  },
+];
+
+const SKILLS = [
+  {
+    category: "Languages",
+    icon: <Code2 size={24} />,
+    items: ["Python", "JavaScript", "Java", "SQL"],
+  },
+  {
+    category: "AI & Machine Learning",
+    icon: <Cpu size={24} />,
+    items: ["PyTorch", "TensorFlow", "Scikit-learn", "NLP", "Computer Vision", "LSTM", "Text-to-SQL"],
+  },
+  {
+    category: "Frontend",
+    icon: <Globe size={24} />,
+    items: ["React", "Tailwind CSS", "HTML/CSS", "Framer Motion"],
+  },
+  {
+    category: "Backend & APIs",
+    icon: <Terminal size={24} />,
+    items: ["FastAPI", "Flask", "SQLAlchemy", "REST APIs"],
+  },
+  {
+    category: "Databases",
+    icon: <Database size={24} />,
+    items: ["PostgreSQL", "Vector DBs", "SQL"],
+  },
+  {
+    category: "DevOps & Cloud",
+    icon: <Layers size={24} />,
+    items: ["Docker", "Docker Compose", "GitHub Actions", "Hugging Face Spaces"],
+  },
+];
+
+const CERTIFICATIONS = [
+  {
+    title: "Artificial Intelligence: Knowledge Representation and Reasoning",
+    issuer: "NPTEL",
+    icon: <Award size={24} />,
+  },
+  {
+    title: "Gen AI Powered Data Analytics Job Simulation",
+    issuer: "TATA iQ · Forage",
+    icon: <Award size={24} />,
+  },
+  {
+    title: "Computer Graphics",
+    issuer: "NPTEL",
+    icon: <Award size={24} />,
+  },
+];
+
+// ─── AMBIENT BACKGROUND ELEMENTS (PIXEL ART) ──────────────────────────────────
+
+// Pre-compute static particles so they don't re-render and jump on scroll
+const STATIC_PARTICLES = Array.from({ length: 25 }).map((_, i) => ({
+  id: i,
+  left: `${Math.floor(Math.random() * 100)}%`,
+  top: `${Math.floor(Math.random() * 100)}%`,
+  delay: `-${Math.floor(Math.random() * 20)}s`,
+  duration: `${15 + Math.floor(Math.random() * 20)}s`
+}));
+
+// Wide, flat-bottomed pixel cloud
+const PixelCloudA = ({ size, top, duration, delay, opacity, reverse }) => (
+  <div className={`sky-element ${reverse ? 'sky-element--reverse' : ''}`} style={{ top, opacity, animationDuration: duration, animationDelay: delay, '--scale': size }}>
+    <svg style={{ transform: reverse ? 'scaleX(-1)' : 'none' }} viewBox="0 0 120 60" width="120" height="60" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#FFFFFF" d="M40 10h30v10h20v10h10v20H20V40H10V30H0V20h20V10h20z"/>
+      <path fill="#E2E8F0" d="M20 50h80v10H20z" opacity="0.8"/>
+    </svg>
+  </div>
+);
+
+// Smaller, puffy pixel cloud
+const PixelCloudB = ({ size, top, duration, delay, opacity, reverse }) => (
+  <div className={`sky-element ${reverse ? 'sky-element--reverse' : ''}`} style={{ top, opacity, animationDuration: duration, animationDelay: delay, '--scale': size }}>
+    <svg style={{ transform: reverse ? 'scaleX(-1)' : 'none' }} viewBox="0 0 80 40" width="80" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path fill="#FFFFFF" d="M30 0h20v10h20v10h10v10H10V20H0V10h10V0h20z"/>
+      <path fill="#E2E8F0" d="M10 30h60v10H10z" opacity="0.8"/>
+    </svg>
+  </div>
+);
+
+// Distant blocky bird silhouette
+const PixelBird = ({ size, top, duration, delay, reverse }) => (
+  <div className={`sky-element ${reverse ? 'sky-element--reverse' : ''}`} style={{ top, animationDuration: duration, animationDelay: delay, '--scale': size }}>
+    <div className="sky-bird-inner" style={{ transform: reverse ? 'scaleX(-1)' : 'none' }}>
+      <svg viewBox="0 0 24 12" width="24" height="12" fill="#64748B" xmlns="http://www.w3.org/2000/svg">
+        <rect x="0" y="0" width="4" height="4"/>
+        <rect x="4" y="4" width="4" height="4"/>
+        <rect x="8" y="8" width="8" height="4"/>
+        <rect x="16" y="4" width="4" height="4"/>
+        <rect x="20" y="0" width="4" height="4"/>
+      </svg>
+    </div>
+  </div>
+);
+
+function SkyBackground() {
   return (
-    <div className="bg-slate-950 text-slate-100 min-h-screen">
-      <Hero />
-      <About />
-      <Skills />
-      <Projects />
-      <NextBuild />
-      <Contact />
+    <div className="sky-background">
+      {/* Subtle Atmospheric Particles */}
+      <div className="sky-particles">
+        {STATIC_PARTICLES.map(p => (
+          <div key={p.id} className="sky-particle" style={{ left: p.left, top: p.top, animationDelay: p.delay, animationDuration: p.duration }} />
+        ))}
+      </div>
+      
+      {/* Background Layer (Small, slow, low opacity) */}
+      <PixelCloudB size={0.5} top="8%" duration="160s" delay="0s" opacity={0.3} />
+      <PixelCloudB size={0.8} top="5%" duration="140s" delay="-110s" opacity={0.4} reverse />
+      <PixelCloudA size={0.6} top="25%" duration="180s" delay="-40s" opacity={0.4} reverse />
+      <PixelCloudB size={0.7} top="65%" duration="150s" delay="-80s" opacity={0.3} />
+      <PixelCloudA size={0.9} top="80%" duration="130s" delay="-10s" opacity={0.5} reverse />
+      
+      {/* Midground Layer (Medium) */}
+      <PixelCloudA size={1.0} top="15%" duration="120s" delay="-20s" opacity={0.6} />
+      <PixelCloudB size={1.2} top="22%" duration="105s" delay="-75s" opacity={0.6} />
+      <PixelCloudA size={1.4} top="38%" duration="90s" delay="-30s" opacity={0.75} />
+      <PixelCloudB size={1.1} top="45%" duration="110s" delay="-60s" opacity={0.5} reverse />
+      <PixelCloudA size={1.2} top="75%" duration="100s" delay="-85s" opacity={0.7} />
+      
+      {/* Foreground Layer (Large, faster, high opacity) */}
+      <PixelCloudB size={1.6} top="30%" duration="80s" delay="-15s" opacity={0.9} />
+      <PixelCloudA size={1.8} top="55%" duration="95s" delay="-50s" opacity={1} />
+      <PixelCloudB size={1.5} top="85%" duration="85s" delay="-90s" opacity={0.8} reverse />
+
+      {/* Birds */}
+      <PixelBird size={0.9} top="12%" duration="60s" delay="-10s" />
+      <PixelBird size={0.6} top="20%" duration="80s" delay="-50s" />
+      <PixelBird size={1.2} top="28%" duration="45s" delay="-15s" reverse />
+      <PixelBird size={0.7} top="40%" duration="70s" delay="-35s" reverse />
+      <PixelBird size={1.0} top="50%" duration="55s" delay="-20s" reverse />
+      <PixelBird size={1.1} top="70%" duration="50s" delay="-5s" />
+      <PixelBird size={0.8} top="85%" duration="65s" delay="-40s" />
     </div>
   );
 }
 
-/* ---------------- HERO ---------------- */
+// ─── HELPERS ──────────────────────────────────────────────────────────────────
+
+function useActiveSection() {
+  const [active, setActive] = useState("home");
+  useEffect(() => {
+    const sections = ["home", "about", "skills", "projects", "education", "contact"];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => { if (e.isIntersecting) setActive(e.target.id); });
+      },
+      { rootMargin: "-40% 0px -55% 0px" }
+    );
+    sections.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+  return active;
+}
+
+function scrollTo(id) {
+  document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+}
+
+// ─── NAVBAR ───────────────────────────────────────────────────────────────────
+
+function Navbar() {
+  const active = useActiveSection();
+  const [scrolled, setScrolled] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  useEffect(() => {
+    const handler = () => setScrolled(window.scrollY > 20);
+    window.addEventListener("scroll", handler);
+    return () => window.removeEventListener("scroll", handler);
+  }, []);
+
+  const links = [
+    { id: "home", label: "Home" },
+    { id: "about", label: "About" },
+    { id: "skills", label: "Skills" },
+    { id: "projects", label: "Projects" },
+    { id: "education", label: "Education" },
+    { id: "contact", label: "Contact" },
+  ];
+
+  return (
+    <nav className={`navbar ${scrolled ? "navbar--scrolled" : ""}`}>
+      <div className="navbar__inner">
+        <button className="navbar__logo" onClick={() => scrollTo("home")}>
+          <span className="navbar__logo-text">SB</span>
+        </button>
+
+        <ul className="navbar__links">
+          {links.map((l) => (
+            <li key={l.id}>
+              <button
+                className={`navbar__link ${active === l.id ? "navbar__link--active" : ""}`}
+                onClick={() => scrollTo(l.id)}
+              >
+                {l.label}
+              </button>
+            </li>
+          ))}
+        </ul>
+
+        <div className="navbar__actions">
+          <a href="/Sukumar_BV_Resume.pdf" download className="btn btn--sm btn--primary" target="_blank" rel="noopener noreferrer">
+            Resume
+          </a>
+          <button className="navbar__hamburger" onClick={() => setMenuOpen((v) => !v)}>
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+      </div>
+
+      <AnimatePresence>
+        {menuOpen && (
+          <motion.div
+            className="navbar__drawer"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            {links.map((l) => (
+              <button
+                key={l.id}
+                className="navbar__drawer-link"
+                onClick={() => { scrollTo(l.id); setMenuOpen(false); }}
+              >
+                {l.label}
+              </button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </nav>
+  );
+}
+
+// ─── HERO ─────────────────────────────────────────────────────────────────────
+
 function Hero() {
   return (
-    <section className="relative flex flex-col items-center justify-center text-center py-40 px-6 overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-indigo-500/10 via-transparent to-transparent blur-3xl" />
-      
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/5 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse" style={{animationDelay: '1s'}} />
-      </div>
+    <section id="home" className="hero">
+      <div className="hero__content container">
+        <div className="hero__layout">
+          <motion.div
+            className="hero__text-col"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+          >
+            <div className="hero__badge">
+              <span className="hero__status-dot" /> Open to Opportunities
+            </div>
+            <h1 className="hero__name">
+              <span className="hero__accent">Sukumar BV</span>
+            </h1>
+            <p className="hero__tagline">
+              An AI & Machine Learning engineer building sophisticated, intelligent systems that bridge complex technology with real-world impact.
+            </p>
+            <p className="hero__sub">
+              3rd-year B.E. student · CGPA 8.88 · Cambridge Institute of Technology
+            </p>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.5 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5 }}
-        className="relative mb-8 z-10"
-      >
-        <div className="w-32 h-32 rounded-full bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-5xl font-bold">
-          SB
+            <div className="hero__ctas">
+              <button className="btn btn--primary btn--lg" onClick={() => scrollTo("projects")}>
+                View Work <ArrowUpRight size={18} />
+              </button>
+              <a href="https://github.com/SukumarBV" target="_blank" rel="noopener noreferrer" className="btn btn--outline btn--lg">
+                <Github size={18} /> GitHub
+              </a>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="hero__visual-col"
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.2, duration: 0.8, ease: "easeOut" }}
+          >
+            <div className="hero__photo-wrapper">
+              <div className="hero__photo-frame">
+                <img src={PHOTO_SRC} alt="Sukumar BV" className="hero__photo" />
+              </div>
+              <div className="hero__photo-shadow" />
+            </div>
+          </motion.div>
         </div>
-      </motion.div>
-
-      <motion.h1
-        initial={{ opacity: 0, y: 40 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.8 }}
-        className="text-6xl md:text-7xl font-extrabold tracking-tight mb-6 relative z-10"
-      >
-        <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-          Sukumar BV
-        </span>
-      </motion.h1>
-
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="text-xl text-indigo-300 mb-4 relative z-10"
-      >
-        Aspiring Software Engineer · AI & ML Specialist
-      </motion.p>
-
-      <motion.p
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="text-slate-400 max-w-2xl mb-10 relative z-10"
-      >
-        Third-year engineering student specializing in AI & ML with hands-on experience 
-        in developing fullstack applications. Proficient in NLP and Computer Vision, 
-        creating intelligent, data-driven systems.
-      </motion.p>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.7 }}
-        className="flex gap-4 flex-wrap justify-center relative z-10"
-      >
-        <a
-          href="https://github.com/SukumarBV"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-6 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-500 transition-all flex items-center gap-2 shadow-lg shadow-indigo-500/30 cursor-pointer"
-        >
-          <Github size={20} />
-          GitHub
-        </a>
-        <a
-          href="https://www.linkedin.com/in/sukumarbv05"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-6 py-3 rounded-xl border border-slate-600 hover:border-indigo-400 transition-all flex items-center gap-2 cursor-pointer"
-        >
-          <Linkedin size={20} />
-          LinkedIn
-        </a>
-        <a
-          href="mailto:sukumarbv27@gmail.com"
-          className="px-6 py-3 rounded-xl border border-slate-600 hover:border-indigo-400 transition-all flex items-center gap-2 cursor-pointer"
-        >
-          <Mail size={20} />
-          Email
-        </a>
-      </motion.div>
+      </div>
     </section>
   );
 }
 
-/* ---------------- ABOUT ---------------- */
+// ─── ABOUT ────────────────────────────────────────────────────────────────────
+
 function About() {
   return (
-    <section className="max-w-5xl mx-auto px-6 py-24">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-      >
-        <h2 className="text-4xl font-bold mb-8 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-          About Me
-        </h2>
-        <div className="grid md:grid-cols-2 gap-8 items-start">
-          <div className="space-y-4">
-            <p className="text-slate-300 leading-relaxed text-lg">
-              I'm a <b className="text-indigo-400">third-year AI & Machine Learning engineering student</b> passionate 
-              about building production-ready AI systems. My expertise spans <b>NLP, Computer Vision, 
-              and Recommendation Systems</b>, with a strong focus on MLOps, automation, and scalable deployment.
+    <section id="about" className="section section--alt">
+      <div className="container">
+        <SectionHeader eyebrow="Background" title="About Me" />
+        <div className="about__grid">
+          <motion.div
+            className="about__text"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <p>Hi, I'm Sukumar.</p>
+            <p>
+              I'm an AI & Machine Learning engineering student who enjoys building intelligent systems that solve real-world problems. My interests span across Machine Learning, Natural Language Processing, Computer Vision, and MLOps, and I love turning ideas into working products—from training models and designing APIs to deploying scalable applications.
             </p>
-            <p className="text-slate-300 leading-relaxed">
-              I don't just build models — I create complete, data-driven systems with robust pipelines, 
-              monitoring, and cloud-optimized deployments. Currently seeking internship opportunities 
-              to apply my skills in real-world environments.
+            <p>
+              Over the past few years, I've worked on projects ranging from AI-powered query engines and recommendation systems to real-time traffic analytics and air quality forecasting solutions. What excites me most about AI is its ability to bridge complex technology with practical impact.
             </p>
-          </div>
-          <div className="space-y-3">
-            <InfoItem icon="📍" label="Location" value="Bengaluru, Karnataka, India" />
-            <InfoItem icon="📧" label="Email" value="sukumarbv27@gmail.com" />
-            <InfoItem icon="📱" label="Phone" value="+91 9380964393" />
-            <InfoItem icon="🎓" label="Status" value="3rd Year Engineering Student" />
-          </div>
-        </div>
-      </motion.div>
-    </section>
-  );
-}
+            <p>
+              When I'm not building projects, you'll find me exploring new AI tools, learning about emerging technologies, and experimenting with ways to make machine learning systems more efficient and accessible.
+            </p>
+            <p>
+              I'm always open to collaborating on interesting projects, learning from others, and contributing to innovative AI solutions.
+            </p>
 
-function InfoItem({ icon, label, value }) {
-  return (
-    <div className="flex items-start gap-3 p-3 rounded-lg bg-slate-900/40 border border-slate-800 hover:border-indigo-500/30 transition-colors">
-      <span className="text-2xl">{icon}</span>
-      <div>
-        <div className="text-xs text-slate-500 uppercase tracking-wide">{label}</div>
-        <div className="text-slate-300">{value}</div>
+            <div className="about__info">
+              <div className="about__info-item">
+                <div className="about__info-icon"><MapPin size={18} /></div>
+                <span>Bengaluru, India</span>
+              </div>
+              <div className="about__info-item">
+                <div className="about__info-icon"><Mail size={18} /></div>
+                <span>sukumarbv27@gmail.com</span>
+              </div>
+              <div className="about__info-item">
+                <div className="about__info-icon"><BookOpen size={18} /></div>
+                <span>B.E. AI & ML · 2023–2027</span>
+              </div>
+            </div>
+          </motion.div>
+        </div>
       </div>
-    </div>
+    </section>
   );
 }
 
-/* ---------------- SKILLS ---------------- */
+// ─── SKILLS ───────────────────────────────────────────────────────────────────
+
 function Skills() {
-  const skillCategories = [
-    {
-      title: "Languages",
-      skills: ["Python", "Java", "JavaScript", "SQL"]
-    },
-    {
-      title: "AI / Machine Learning",
-      skills: ["Natural Language Processing (NLP)", "Text-to-SQL", "Computer Vision", "Scikit-learn", "CVZone"]
-    },
-    {
-      title: "Frameworks & Libraries",
-      skills: ["FastAPI", "React", "SQLAlchemy", "OpenCV", "PyAutoGUI"]
-    },
-    {
-      title: "Databases & DevOps",
-      skills: ["PostgreSQL", "Docker", "DockerCompose", "Git & GitHub", "VS Code"]
-    }
-  ];
-
   return (
-    <section className="max-w-6xl mx-auto px-6 py-24">
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-      >
-        <h2 className="text-4xl font-bold mb-12 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-          Technical Skills
-        </h2>
-        <div className="grid md:grid-cols-2 gap-6">
-          {skillCategories.map((category, idx) => (
+    <section id="skills" className="section">
+      <div className="container">
+        <SectionHeader eyebrow="Toolkit" title="Technical Skills" />
+        <div className="skills__grid">
+          {SKILLS.map((cat, i) => (
             <motion.div
-              key={idx}
+              key={i}
+              className="skill-card"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              whileHover={{ y: -8, scale: 1.02 }}
-              className="p-6 rounded-2xl bg-gradient-to-br from-slate-900 to-slate-800 border border-slate-700 hover:border-indigo-500/50 transition-all duration-300"
+              transition={{ delay: i * 0.05 }}
             >
-              <div className="flex items-center gap-3 mb-4">
-                <span className="text-3xl">{category.icon}</span>
-                <h3 className="text-xl font-semibold text-indigo-300">{category.title}</h3>
+              <div className="skill-card__header">
+                <div className="skill-card__icon">{cat.icon}</div>
+                <h3 className="skill-card__title">{cat.category}</h3>
               </div>
-              <div className="flex flex-wrap gap-2">
-                {category.skills.map((skill, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1.5 text-sm rounded-lg bg-slate-800/80 text-slate-300 border border-slate-700"
-                  >
-                    {skill}
-                  </span>
+              <div className="skill-card__tags">
+                {cat.items.map((item, j) => (
+                  <span key={j} className="skill-tag">{item}</span>
                 ))}
               </div>
             </motion.div>
           ))}
         </div>
-      </motion.div>
+      </div>
     </section>
   );
 }
 
-/* ---------------- PROJECTS ---------------- */
+// ─── PROJECTS ─────────────────────────────────────────────────────────────────
+
 function Projects() {
-  const projects = [
-    {
-      title: "AI-Powered NLP Query Engine",
-      date: "Oct 2025",
-      description: "Built a text-to-SQL platform featuring a Gemini-powered chatbot with dynamic schema discovery, hybrid semantic search, and full containerization with Docker.",
-      technologies: ["Python", "FastAPI", "React", "Docker", "PostgreSQL", "Gemini AI"],
-      highlights: [
-        "Dynamic schema discovery module",
-        "Hybrid search with semantic vector capabilities",
-        "Containerized full-stack application"
-      ],
-      link: "/projects/nlp-query-engine",
-      featured: true
-    },
-    {
-      title: "Product Recommendation App",
-      date: "Nov 2025",
-      description: "Constructed collaborative filtering recommender systems demonstrating item similarity and user behavior patterns on recommendation results.",
-      technologies: ["Python", "Scikit-learn", "K-Nearest Neighbors"],
-      highlights: [
-        "Item similarity analysis",
-        "User behavior modeling",
-        "Textual metadata recommendations"
-      ],
-      link: "/projects/recommendation-app",
-      featured: false
-    },
-    {
-      title: "Smart City Traffic Congestion Prediction (MLOps)",
-      date: "Jan 2026",
-      description: "Built an end-to-end MLOps pipeline for Bengaluru traffic prediction with automated drift detection, retraining, MLflow tracking, and CI/CD cloud deployment.",
-      technologies: ["FastAPI", "Scikit-learn", "MLflow", "Docker", "GitHub Actions"],
-      highlights: [
-        "Automated drift detection & retraining",
-        "MLflow experiment tracking",
-        "CI/CD with GitHub Actions",
-        "Cloud-optimized lightweight models"
-      ],
-      link: "/projects/traffic-mlops",
-      featured: true,
-      liveDemo: "https://bengaluru-traffic-mlops.onrender.com"
-    },
-    {
-      title: "Lung Cancer Prediction",
-      date: "Jul 2025",
-      description: "Developed a lung cancer risk prediction pipeline using multiple classification algorithms with comprehensive model evaluation and medical indicator analysis.",
-      technologies: ["Python", "Scikit-learn", "Random Forest", "Logistic Regression", "SVM"],
-      highlights: [
-        "Multiple algorithm comparison",
-        "Medical indicator cross-validation",
-        "Exploratory data analysis & visualizations"
-      ],
-      link: "/projects/lung-cancer",
-      featured: false
-    }
-  ];
+  const [selected, setSelected] = useState(null);
 
   return (
-    <section className="max-w-6xl mx-auto px-6 py-24">
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-      >
-        <h2 className="text-4xl font-bold mb-12 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-          Featured Projects
-        </h2>
-        
-        <div className="space-y-6">
-          {projects.map((project, idx) => (
-            <motion.div
-              key={idx}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: idx * 0.1 }}
-              whileHover={{ scale: 1.01 }}
-              className={`relative p-8 rounded-2xl border transition-all duration-300 ${
-                project.featured
-                  ? 'bg-gradient-to-br from-indigo-900/30 to-purple-900/30 border-indigo-500/50 shadow-lg shadow-indigo-500/10'
-                  : 'bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700 hover:border-indigo-500/30'
-              }`}
-            >
-              {project.featured && (
-                <span className="absolute top-4 right-4 px-3 py-1 text-xs text-indigo-300 bg-indigo-500/20 rounded-full border border-indigo-500/50">
-                  FEATURED
-                </span>
-              )}
-
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="text-2xl font-semibold mb-2 text-indigo-200">{project.title}</h3>
-                  <div className="flex items-center gap-2 text-sm text-slate-400">
-                    <Calendar size={14} />
-                    <span>{project.date}</span>
-                  </div>
-                </div>
-              </div>
-
-              <p className="text-slate-300 mb-4 leading-relaxed">{project.description}</p>
-
-              <div className="mb-4">
-                <h4 className="text-sm font-semibold text-slate-400 mb-2">Key Highlights:</h4>
-                <ul className="space-y-1">
-                  {project.highlights.map((highlight, i) => (
-                    <li key={i} className="text-sm text-slate-400 flex items-start gap-2">
-                      <span className="text-indigo-400 mt-1">•</span>
-                      <span>{highlight}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-
-              <div className="flex flex-wrap gap-2 mb-6">
-                {project.technologies.map((tech, i) => (
-                  <span
-                    key={i}
-                    className="px-3 py-1 text-xs rounded-full bg-slate-800/80 text-slate-300 border border-slate-700"
-                  >
-                    {tech}
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex gap-4">
-                <Link
-                  to={project.link}
-                  className="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition"
-                >
-                  View Details <ArrowRight size={16} />
-                </Link>
-                {project.liveDemo && (
-                  <a
-                    href={project.liveDemo}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition"
-                  >
-                    Live Demo <ExternalLink size={16} />
-                  </a>
-                )}
-              </div>
-            </motion.div>
+    <section id="projects" className="section section--alt">
+      <div className="container">
+        <SectionHeader eyebrow="Work" title="Featured Projects" />
+        <div className="projects__grid">
+          {PROJECTS.map((project, i) => (
+            <ProjectCard
+              key={project.id}
+              project={project}
+              index={i}
+              onClick={() => setSelected(project)}
+            />
           ))}
         </div>
-      </motion.div>
+      </div>
+
+      <AnimatePresence>
+        {selected && (
+          <ProjectModal project={selected} onClose={() => setSelected(null)} />
+        )}
+      </AnimatePresence>
     </section>
   );
 }
 
-/* ---------------- NEXT BUILD ---------------- */
-function NextBuild() {
+function ProjectCard({ project, index, onClick }) {
   return (
-    <section className="max-w-5xl mx-auto px-6 py-24">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="p-8 rounded-2xl bg-gradient-to-br from-purple-900/20 to-indigo-900/20 border border-purple-500/30"
-      >
-        <h2 className="text-3xl font-bold mb-4 text-purple-300">What I'm Building Next</h2>
-        <p className="text-slate-300 leading-relaxed text-lg">
-          I'm currently developing a <b className="text-indigo-400">local AI assistant</b> focused on intent
-          recognition, voice-based command execution, and automation — without
-          relying on cloud LLMs. This project combines my interests in NLP, edge computing, 
-          and creating privacy-focused AI solutions.
-        </p>
-      </motion.div>
-    </section>
-  );
-}
-
-/* ---------------- CONTACT ---------------- */
-function Contact() {
-  return (
-    <section className="text-center py-24 px-6">
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-      >
-        <h2 className="text-4xl font-bold mb-6 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-          Let's Connect
-        </h2>
-        <p className="text-slate-400 mb-10 max-w-2xl mx-auto">
-          I'm actively seeking internship opportunities in AI/ML and software engineering. 
-          Feel free to reach out if you'd like to collaborate or discuss opportunities!
-        </p>
-        <div className="flex justify-center gap-8 text-slate-300">
-          <motion.a
-            whileHover={{ scale: 1.2, y: -5 }}
-            href="https://github.com/SukumarBV"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-indigo-400 transition"
-          >
-            <Github size={32} />
-          </motion.a>
-          <motion.a
-            whileHover={{ scale: 1.2, y: -5 }}
-            href="https://www.linkedin.com/in/sukumarbv05"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-indigo-400 transition"
-          >
-            <Linkedin size={32} />
-          </motion.a>
-          <motion.a
-            whileHover={{ scale: 1.2, y: -5 }}
-            href="mailto:sukumarbv27@gmail.com"
-            className="hover:text-indigo-400 transition"
-          >
-            <Mail size={32} />
-          </motion.a>
+    <motion.div
+      className="project-card"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.4, delay: index * 0.1 }}
+      onClick={onClick}
+    >
+      <div className="project-card__inner">
+        <div className="project-card__top">
+          <span className="project-card__category">{project.category}</span>
+          {project.featured && <span className="project-card__badge">Featured</span>}
         </div>
-      </motion.div>
-    </section>
+
+        <h3 className="project-card__title">{project.title}</h3>
+        <p className="project-card__subtitle">{project.subtitle}</p>
+        <p className="project-card__desc">{project.description}</p>
+
+        <div className="project-card__tech">
+          {project.tech.slice(0, 4).map((t, i) => (
+            <span key={i} className="tech-badge">{t}</span>
+          ))}
+          {project.tech.length > 4 && (
+            <span className="tech-badge tech-badge--more">+{project.tech.length - 4}</span>
+          )}
+        </div>
+
+        <div className="project-card__footer">
+          <span className="project-card__cta">
+            Read Case Study <ArrowUpRight size={16} />
+          </span>
+          <div className="project-card__links" onClick={(e) => e.stopPropagation()}>
+            <a href={project.github} target="_blank" rel="noopener noreferrer" className="icon-link">
+              <Github size={18} />
+            </a>
+            {project.live && (
+              <a href={project.live} target="_blank" rel="noopener noreferrer" className="icon-link">
+                <ExternalLink size={18} />
+              </a>
+            )}
+          </div>
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
-/* ---------------- PROJECT DETAIL PAGES ---------------- */
-function TrafficProject() {
-  return (
-    <ProjectDetail
-      title="Smart City Traffic Congestion Prediction (MLOps)"
-      date="Jan 2026"
-      description="This project implements a production-grade MLOps pipeline for traffic congestion prediction in Bengaluru. It showcases end-to-end ML lifecycle management with automated monitoring, retraining, and deployment."
-      technologies={["FastAPI", "Scikit-learn", "MLflow", "Docker", "GitHub Actions", "PostgreSQL"]}
-      features={[
-        "Live FastAPI inference service with RESTful endpoints",
-        "Automated data drift and concept drift detection",
-        "MLflow experiment tracking and model registry",
-        "GitHub Actions CI/CD pipeline for automated deployment",
-        "Cloud-optimized lightweight models for real-time inference",
-        "Comprehensive logging and monitoring system",
-        "Automated model retraining triggers based on performance degradation"
-      ]}
-      challenges={[
-        "Implementing robust drift detection in production",
-        "Balancing model accuracy with inference latency",
-        "Designing efficient retraining pipelines",
-        "Managing model versioning and rollback strategies"
-      ]}
-      learnings={[
-        "Production MLOps best practices",
-        "Automated CI/CD for ML systems",
-        "Performance monitoring and alerting",
-        "Cloud infrastructure optimization"
-      ]}
-    />
-  );
-}
+function ProjectModal({ project, onClose }) {
+  useEffect(() => {
+    const handler = (e) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", handler);
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.removeEventListener("keydown", handler);
+      document.body.style.overflow = "";
+    };
+  }, [onClose]);
 
-function NLPProject() {
   return (
-    <ProjectDetail
-      title="AI-Powered NLP Query Engine"
-      date="Oct 2025"
-      description="A sophisticated text-to-SQL platform that leverages Google's Gemini LLM for natural language database queries. The system features dynamic schema discovery and hybrid search capabilities."
-      technologies={["Python", "FastAPI", "React", "Docker", "PostgreSQL", "Gemini AI", "Semantic Search"]}
-      features={[
-        "Natural language to SQL query conversion using Gemini",
-        "Dynamic database schema discovery and adaptation",
-        "Hybrid search combining keyword and semantic vector search",
-        "Full-stack containerized architecture with Docker",
-        "Interactive React frontend for query building",
-        "Real-time query optimization and validation",
-        "Support for complex multi-table joins and aggregations"
-      ]}
-      challenges={[
-        "Handling ambiguous natural language queries",
-        "Optimizing semantic search performance",
-        "Managing context for multi-turn conversations",
-        "Ensuring SQL injection prevention"
-      ]}
-      learnings={[
-        "LLM integration and prompt engineering",
-        "Vector embeddings and semantic search",
-        "Full-stack application architecture",
-        "Database schema introspection techniques"
-      ]}
-    />
-  );
-}
+    <motion.div
+      className="modal-overlay"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      onClick={onClose}
+    >
+      <motion.div
+        className="modal"
+        initial={{ opacity: 0, y: 20, scale: 0.98 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        exit={{ opacity: 0, y: 20, scale: 0.98 }}
+        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <button className="modal__close" onClick={onClose}><X size={20} /></button>
 
-function RecommendationProject() {
-  return (
-    <ProjectDetail
-      title="Product Recommendation App"
-      date="Nov 2025"
-      description="A collaborative filtering recommendation system that analyzes item similarity and user behavior patterns to provide personalized product suggestions."
-      technologies={["Python", "Scikit-learn", "K-Nearest Neighbors", "Pandas", "NumPy"]}
-      features={[
-        "Item-based collaborative filtering",
-        "User behavior pattern analysis",
-        "K-Nearest Neighbors implementation for similarity computation",
-        "Textual metadata-based recommendations",
-        "User rating prediction algorithms",
-        "Cold start problem mitigation strategies"
-      ]}
-      challenges={[
-        "Handling sparse user-item matrices",
-        "Scaling similarity computations efficiently",
-        "Balancing precision and recall",
-        "Addressing the cold start problem"
-      ]}
-      learnings={[
-        "Collaborative filtering algorithms",
-        "Similarity metrics and their applications",
-        "Recommendation system evaluation metrics",
-        "Matrix factorization techniques"
-      ]}
-    />
-  );
-}
+        <div className="modal__header">
+          <div className="modal__meta">
+            <span className="modal__category">{project.category}</span>
+            <span className="modal__date"><Calendar size={14} /> {project.date}</span>
+          </div>
+          <h2 className="modal__title">{project.title}</h2>
+          <p className="modal__subtitle">{project.subtitle}</p>
+        </div>
 
-function LungCancerProject() {
-  return (
-    <ProjectDetail
-      title="Lung Cancer Prediction"
-      date="Jul 2025"
-      description="A comprehensive machine learning pipeline for lung cancer risk prediction using multiple classification algorithms, with extensive model evaluation and medical indicator analysis."
-      technologies={["Python", "Scikit-learn", "Random Forest", "Logistic Regression", "SVM", "KNN", "Naive Bayes", "Decision Trees"]}
-      features={[
-        "Multiple algorithm comparison (Random Forest, Logistic Regression, SVM, KNN, Naive Bayes, Decision Trees)",
-        "Medical indicator cross-validation and feature importance analysis",
-        "Exploratory data analysis with comprehensive visualizations",
-        "Model performance metrics and evaluation",
-        "Feature engineering for medical indicators",
-        "Hyperparameter tuning for optimal performance"
-      ]}
-      challenges={[
-        "Handling imbalanced medical datasets",
-        "Interpreting model predictions for clinical use",
-        "Feature selection from numerous medical indicators",
-        "Ensuring model reliability for healthcare applications"
-      ]}
-      learnings={[
-        "Medical data preprocessing techniques",
-        "Ensemble methods for classification",
-        "Model interpretability in healthcare",
-        "Cross-validation strategies for reliable evaluation"
-      ]}
-    />
-  );
-}
+        <div className="modal__body">
+          <ModalSection title="The Problem" icon={<Target size={20} />}>
+            {project.problem}
+          </ModalSection>
+          
+          <ModalSection title="The Solution" icon={<Lightbulb size={20} />}>
+            {project.solution}
+          </ModalSection>
 
-function ProjectDetail({ title, date, description, technologies, features, challenges, learnings }) {
-  return (
-    <div className="bg-slate-950 text-slate-100 min-h-screen px-6 py-24">
-      <div className="max-w-4xl mx-auto">
-        <Link to="/" className="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition mb-8">
-          ← Back to Home
-        </Link>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="flex items-center gap-3 mb-4">
-            <Calendar className="text-indigo-400" size={20} />
-            <span className="text-slate-400">{date}</span>
+          <div className="modal__two-col">
+            <div className="modal__highlight-box">
+              <h4 className="modal__section-title"><CheckCircle size={18} /> Key Features</h4>
+              <ul className="modal__list">
+                {project.features.map((f, i) => <li key={i}>{f}</li>)}
+              </ul>
+            </div>
+            <div className="modal__highlight-box">
+              <h4 className="modal__section-title"><Flag size={18} /> Challenges</h4>
+              <ul className="modal__list">
+                {project.challenges.map((c, i) => <li key={i}>{c}</li>)}
+              </ul>
+            </div>
           </div>
 
-          <h1 className="text-5xl font-bold mb-6 bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
-            {title}
-          </h1>
+          <ModalSection title="Impact & Outcomes" icon={<TrendingUp size={20} />}>
+            {project.impact}
+          </ModalSection>
 
-          <p className="text-slate-300 text-lg leading-relaxed mb-8">
-            {description}
-          </p>
-
-          <div className="mb-10">
-            <h3 className="text-xl font-semibold mb-4 text-indigo-300">Technologies Used</h3>
-            <div className="flex flex-wrap gap-3">
-              {technologies.map((tech, i) => (
-                <span
-                  key={i}
-                  className="px-4 py-2 rounded-lg bg-gradient-to-r from-indigo-900/40 to-purple-900/40 border border-indigo-500/30 text-slate-200"
-                >
-                  {tech}
-                </span>
+          <div className="modal__tech">
+            <h4 className="modal__section-title"><Settings size={18} /> Technologies Used</h4>
+            <div className="modal__tech-tags">
+              {project.tech.map((t, i) => (
+                <span key={i} className="tech-badge tech-badge--lg">{t}</span>
               ))}
             </div>
           </div>
 
-          <div className="space-y-8">
-            <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800">
-              <h3 className="text-xl font-semibold mb-4 text-indigo-300">Key Features</h3>
-              <ul className="space-y-3">
-                {features.map((feature, i) => (
-                  <li key={i} className="text-slate-300 flex items-start gap-3">
-                    <span className="text-indigo-400 font-bold mt-1">✓</span>
-                    <span>{feature}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800">
-              <h3 className="text-xl font-semibold mb-4 text-purple-300">Challenges & Solutions</h3>
-              <ul className="space-y-3">
-                {challenges.map((challenge, i) => (
-                  <li key={i} className="text-slate-300 flex items-start gap-3">
-                    <span className="text-purple-400 font-bold mt-1">⚡</span>
-                    <span>{challenge}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-
-            <div className="p-6 rounded-xl bg-slate-900/60 border border-slate-800">
-              <h3 className="text-xl font-semibold mb-4 text-pink-300">Key Learnings</h3>
-              <ul className="space-y-3">
-                {learnings.map((learning, i) => (
-                  <li key={i} className="text-slate-300 flex items-start gap-3">
-                    <span className="text-pink-400 font-bold mt-1">📚</span>
-                    <span>{learning}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
+          <div className="modal__actions">
+            <a href={project.github} target="_blank" rel="noopener noreferrer" className="btn btn--primary">
+              <Github size={18} /> View Source Code
+            </a>
+            {project.live && (
+              <a href={project.live} target="_blank" rel="noopener noreferrer" className="btn btn--outline">
+                <ExternalLink size={18} /> Live Demo
+              </a>
+            )}
           </div>
-        </motion.div>
+        </div>
+      </motion.div>
+    </motion.div>
+  );
+}
+
+function ModalSection({ title, icon, children }) {
+  return (
+    <div className="modal__section">
+      <h4 className="modal__section-title">
+        <span className="modal__section-icon">{icon}</span> {title}
+      </h4>
+      <p className="modal__text">{children}</p>
+    </div>
+  );
+}
+
+// ─── EDUCATION & CERTS ────────────────────────────────────────────────────────
+
+function Education() {
+  return (
+    <section id="education" className="section">
+      <div className="container">
+        <SectionHeader eyebrow="Academic" title="Education & Learning" />
+        
+        <div className="edu-cert-grid">
+          <motion.div
+            className="edu-card"
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+          >
+            <div className="edu-card__icon">
+              <BookOpen size={32} />
+            </div>
+            <div className="edu-card__body">
+              <div className="edu-card__meta">
+                <span className="edu-card__degree">Bachelor of Engineering</span>
+                <span className="edu-card__gpa">CGPA: 8.88 / 10</span>
+              </div>
+              <h3 className="edu-card__major">Artificial Intelligence &amp; Machine Learning</h3>
+              <p className="edu-card__school">Cambridge Institute of Technology · Bengaluru, India</p>
+              <div className="edu-card__period">
+                <Calendar size={14} /> 2023 – 2027
+              </div>
+            </div>
+          </motion.div>
+
+          <div className="certs__grid">
+            {CERTIFICATIONS.map((cert, i) => (
+              <motion.div
+                key={i}
+                className="cert-card"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1 }}
+              >
+                <div className="cert-card__icon-wrap">
+                  {cert.icon}
+                </div>
+                <div>
+                  <p className="cert-card__title">{cert.title}</p>
+                  <p className="cert-card__issuer">{cert.issuer}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
       </div>
+    </section>
+  );
+}
+
+// ─── CONTACT ──────────────────────────────────────────────────────────────────
+
+function Contact() {
+  return (
+    <section id="contact" className="section section--alt">
+      <div className="container">
+        <SectionHeader eyebrow="Get in touch" title="Let's Connect" />
+        <div className="contact__grid">
+          <motion.div
+            className="contact__left"
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+          >
+            <p className="contact__copy">
+              I'm actively looking for opportunities in <strong>Software Engineering</strong>,{" "}
+              <strong>Systems Engineering</strong>, <strong>Technical Projects</strong>, and{" "}
+              <strong>Research</strong>. Whether you have an open role, an exciting technical project, or are looking to collaborate on emerging technology opportunities, I'd love to connect.
+            </p>
+
+            <div className="contact__links">
+              <a href="mailto:sukumarbv27@gmail.com" target="_blank" rel="noopener noreferrer" className="contact__link">
+                <div className="contact__link-icon"><Mail size={20} /></div>
+                <span>sukumarbv27@gmail.com</span>
+                <ArrowUpRight size={16} className="contact__link-arrow" />
+              </a>
+              <a href="https://github.com/SukumarBV" target="_blank" rel="noopener noreferrer" className="contact__link">
+                <div className="contact__link-icon"><Github size={20} /></div>
+                <span>github.com/SukumarBV</span>
+                <ArrowUpRight size={16} className="contact__link-arrow" />
+              </a>
+              <a href="https://www.linkedin.com/in/sukumarbv05" target="_blank" rel="noopener noreferrer" className="contact__link">
+                <div className="contact__link-icon"><Linkedin size={20} /></div>
+                <span>linkedin.com/in/sukumarbv05</span>
+                <ArrowUpRight size={16} className="contact__link-arrow" />
+              </a>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="contact__card"
+            initial={{ opacity: 0, x: 20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: 0.1 }}
+          >
+            <div className="contact__card-inner">
+              <div className="contact__card-icon">
+                <Mail size={32} />
+              </div>
+              <p className="contact__card-label">Start a conversation</p>
+              <p className="contact__card-email">sukumarbv27@gmail.com</p>
+              <a href="mailto:sukumarbv27@gmail.com" className="btn btn--primary btn--lg" style={{ width: "100%" }}>
+                Reach Out Now
+              </a>
+            </div>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── FOOTER ───────────────────────────────────────────────────────────────────
+
+function Footer() {
+  return (
+    <footer className="footer">
+      <div className="footer__inner container">
+        <div className="footer__left">
+          <span className="footer__name">Sukumar BV</span>
+          <span className="footer__copy">© {new Date().getFullYear()} · Built by Sukumar BV.</span>
+        </div>
+        <div className="footer__socials">
+          <a href="https://github.com/SukumarBV" target="_blank" rel="noopener noreferrer" className="icon-link">
+            <Github size={18} />
+          </a>
+          <a href="https://www.linkedin.com/in/sukumarbv05" target="_blank" rel="noopener noreferrer" className="icon-link">
+            <Linkedin size={18} />
+          </a>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+// ─── SHARED COMPONENTS ────────────────────────────────────────────────────────
+
+function SectionHeader({ eyebrow, title }) {
+  return (
+    <motion.div
+      className="section-header"
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-100px" }}
+    >
+      <span className="section-header__eyebrow">{eyebrow}</span>
+      <h2 className="section-header__title">{title}</h2>
+    </motion.div>
+  );
+}
+
+// ─── APP ──────────────────────────────────────────────────────────────────────
+
+export default function App() {
+  return (
+    <div className="app">
+      <SkyBackground />
+      <Navbar />
+      <Hero />
+      <About />
+      <Skills />
+      <Projects />
+      <Education />
+      <Contact />
+      <Footer />
     </div>
   );
 }
