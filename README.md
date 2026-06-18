@@ -1,70 +1,81 @@
-# Getting Started with Create React App
+# Sukumar BV Portfolio
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Welcome to my portfolio website.
 
-## Available Scripts
+I'm an AI & Machine Learning engineering student who enjoys building intelligent systems that solve real-world problems. This website is a collection of the projects, technologies, and ideas I've explored throughout my journey as a developer and engineer.
 
-In the project directory, you can run:
+Rather than creating a typical portfolio, I wanted this site to reflect a bit of my personality as well. The design takes inspiration from games like Stardew Valley that have always reminded me how rewarding it is to explore, experiment, and build something from scratch. That same mindset is what draws me to software engineering and AI.
 
-### `npm start`
+## About Me
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+I'm currently pursuing a Bachelor's degree in Artificial Intelligence & Machine Learning at Cambridge Institute of Technology, Bengaluru.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+My interests include:
 
-### `npm test`
+* Machine Learning
+* Artificial Intelligence
+* Natural Language Processing
+* Computer Vision
+* MLOps
+* Systems Engineering
+* Full-Stack Development
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+I enjoy working on projects that combine software, data, and problem-solving to create practical solutions with real-world impact.
 
-### `npm run build`
+## What You'll Find Here
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+This portfolio showcases projects across several domains, including:
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+* AI-powered applications
+* Machine Learning systems
+* MLOps and deployment pipelines
+* Natural Language Processing
+* Computer Vision
+* Recommendation Systems
+* Full-stack development
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+Some of the projects featured include an AI-powered air quality monitoring system developed as part of an ISRO project internship, a production-style traffic congestion MLOps platform, an NLP-powered query engine, recommendation systems, and computer vision applications.
 
-### `npm run eject`
+## Built With
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+* React
+* JavaScript
+* CSS
+* Framer Motion
+* GitHub Pages
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## Running Locally
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+Clone the repository:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```bash
+git clone https://github.com/SukumarBV/SukumarBV.github.io.git
+```
 
-## Learn More
+Navigate to the project directory:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+cd SukumarBV.github.io
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Install dependencies:
 
-### Code Splitting
+```bash
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Start the development server:
 
-### Analyzing the Bundle Size
+```bash
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+## Connect With Me
 
-### Making a Progressive Web App
+GitHub: https://github.com/SukumarBV
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+LinkedIn: https://www.linkedin.com/in/sukumarbv05
 
-### Advanced Configuration
+Email: [sukumarbv27@gmail.com](mailto:sukumarbv27@gmail.com)
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Thanks for stopping by. If you have feedback, want to collaborate, or just want to talk, feel free to reach out.
