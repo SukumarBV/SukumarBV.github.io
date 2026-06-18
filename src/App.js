@@ -130,6 +130,64 @@ const PROJECTS = [
     live: null,
     featured: false,
   },
+  {
+    id: "hand-gesture",
+    title: "Hand Gesture Mouse Controller",
+    subtitle: "Computer Vision HCI",
+    date: "2024",
+    tags: ["Computer Vision", "HCI"],
+    category: "Computer Vision",
+    description:
+      "Control your system mouse entirely through hand gestures captured by a webcam — move, click, drag, scroll — with real-time landmark detection and configurable smoothing.",
+    problem:
+      "Traditional mouse peripherals are inaccessible in many contexts (accessibility, presentations, industrial settings). A vision-based controller requires no additional hardware.",
+    solution:
+      "Used CVZone's hand landmark detection on live webcam frames to map index finger position to screen coordinates. Implemented distinct gesture classifiers with a click-cooldown mechanism.",
+    features: [
+      "Index finger → cursor movement with smoothing",
+      "Fist gesture → left click",
+      "Index + middle fingers → right click",
+      "Thumb + index pinch → drag & drop",
+    ],
+    challenges: [
+      "Minimizing cursor jitter from noisy webcam input",
+      "Distinguishing similar gestures reliably across different hand sizes",
+    ],
+    impact: "Functional, real-time gesture controller that works on any laptop with a webcam — no extra hardware required.",
+    tech: ["Python", "CVZone", "OpenCV", "PyAutoGUI"],
+    github: "https://github.com/SukumarBV/Hand-Gesture-Mouse-Controller",
+    live: null,
+    featured: false,
+  },
+  {
+    id: "lung-cancer",
+    title: "Lung Cancer Prediction",
+    subtitle: "Clinical ML Pipeline",
+    date: "Jul 2025",
+    tags: ["Healthcare AI", "Classification"],
+    category: "AI/ML",
+    description:
+      "A comparative ML pipeline for lung cancer risk prediction across six classifiers — Random Forest, Logistic Regression, SVM, KNN, Naive Bayes, Decision Trees — with full EDA and feature importance analysis.",
+    problem:
+      "Early lung cancer detection saves lives. ML can surface patterns in clinical indicators that are hard to detect manually, but model choice matters significantly in healthcare contexts.",
+    solution:
+      "Ran six classification algorithms on a lung cancer dataset with comprehensive EDA, feature engineering, and cross-validation. Compared models by accuracy, precision, recall, and F1.",
+    features: [
+      "Six-way classifier comparison on the same dataset",
+      "Feature importance and medical indicator analysis",
+      "Imbalanced dataset handling strategies",
+      "Hyperparameter tuning for top models",
+    ],
+    challenges: [
+      "Handling class imbalance in medical datasets",
+      "Ensuring recall is maximized (false negatives are costly)",
+    ],
+    impact: "Documents which classifiers work best for cancer-risk prediction and why — a useful reference for healthcare ML.",
+    tech: ["Python", "Scikit-learn", "Random Forest", "SVM", "Pandas"],
+    github: "https://github.com/SukumarBV/lung-cancer-prediction",
+    live: null,
+    featured: false,
+  }
 ];
 
 const SKILLS = [
@@ -388,7 +446,7 @@ function Hero() {
               <span className="hero__status-dot" /> Open to Opportunities
             </div>
             <h1 className="hero__name">
-              <span className="hero__accent">Sukumar BV</span>
+              Hi, I'm <span className="hero__accent">Sukumar BV</span>
             </h1>
             <p className="hero__tagline">
               An AI & Machine Learning engineer building sophisticated, intelligent systems that bridge complex technology with real-world impact.
