@@ -437,13 +437,13 @@ function Hero() {
               <span className="hero__status-dot" /> Open to Opportunities
             </div>
             <h1 className="hero__name">
-              Hi, I'm <span className="hero__accent">Sukumar BV</span>
+             <span className="hero__accent">Sukumar BV</span>
             </h1>
             <p className="hero__tagline">
               An AI & Machine Learning engineer building sophisticated, intelligent systems that bridge complex technology with real-world impact.
             </p>
             <p className="hero__sub">
-              4th-year B.E. student · CGPA 8.88 · Cambridge Institute of Technology
+              4th-year B.E. student · CGPA 8.97 · Cambridge Institute of Technology
             </p>
 
             <div className="hero__ctas">
@@ -769,7 +769,7 @@ function Education() {
             <div className="edu-card__body">
               <div className="edu-card__meta">
                 <span className="edu-card__degree">Bachelor of Engineering</span>
-                <span className="edu-card__gpa">CGPA: 8.88 / 10</span>
+                <span className="edu-card__gpa">CGPA: 8.97 / 10</span>
               </div>
               <h3 className="edu-card__major">Artificial Intelligence &amp; Machine Learning</h3>
               <p className="edu-card__school">Cambridge Institute of Technology · Bengaluru, India</p>
