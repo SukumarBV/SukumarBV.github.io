@@ -113,7 +113,7 @@ const PROJECTS = [
     problem:
       "E-commerce recommendation systems are often black boxes. This project makes the tradeoffs between content-based and collaborative filtering visible and interactive.",
     solution:
-      "Built two recommendation engines side-by-side: a content-based system using TF-IDF + cosine similarity on product descriptions, and a collaborative system using a user-item matrix + KNN.",
+      "Built two recommendation engines side-by-side: a content-based system using TF-IDF + cosine similarity on product descriptions/categories, and a collaborative system using a user-item matrix + KNN. A Flask UI lets users compare outputs.",
     features: [
       "Side-by-side content-based vs collaborative filtering comparison",
       "TF-IDF with cosine similarity for product metadata",
@@ -243,7 +243,6 @@ const CERTIFICATIONS = [
 
 // ─── AMBIENT BACKGROUND ELEMENTS (PIXEL ART) ──────────────────────────────────
 
-// Pre-compute static particles so they don't re-render and jump on scroll
 const STATIC_PARTICLES = Array.from({ length: 25 }).map((_, i) => ({
   id: i,
   left: `${Math.floor(Math.random() * 100)}%`,
@@ -252,7 +251,6 @@ const STATIC_PARTICLES = Array.from({ length: 25 }).map((_, i) => ({
   duration: `${15 + Math.floor(Math.random() * 20)}s`
 }));
 
-// Wide, flat-bottomed pixel cloud
 const PixelCloudA = ({ size, top, duration, delay, opacity, reverse }) => (
   <div className={`sky-element ${reverse ? 'sky-element--reverse' : ''}`} style={{ top, opacity, animationDuration: duration, animationDelay: delay, '--scale': size }}>
     <svg style={{ transform: reverse ? 'scaleX(-1)' : 'none' }} viewBox="0 0 120 60" width="120" height="60" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -262,7 +260,6 @@ const PixelCloudA = ({ size, top, duration, delay, opacity, reverse }) => (
   </div>
 );
 
-// Smaller, puffy pixel cloud
 const PixelCloudB = ({ size, top, duration, delay, opacity, reverse }) => (
   <div className={`sky-element ${reverse ? 'sky-element--reverse' : ''}`} style={{ top, opacity, animationDuration: duration, animationDelay: delay, '--scale': size }}>
     <svg style={{ transform: reverse ? 'scaleX(-1)' : 'none' }} viewBox="0 0 80 40" width="80" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -272,7 +269,6 @@ const PixelCloudB = ({ size, top, duration, delay, opacity, reverse }) => (
   </div>
 );
 
-// Distant blocky bird silhouette
 const PixelBird = ({ size, top, duration, delay, reverse }) => (
   <div className={`sky-element ${reverse ? 'sky-element--reverse' : ''}`} style={{ top, animationDuration: duration, animationDelay: delay, '--scale': size }}>
     <div className="sky-bird-inner" style={{ transform: reverse ? 'scaleX(-1)' : 'none' }}>
@@ -290,33 +286,28 @@ const PixelBird = ({ size, top, duration, delay, reverse }) => (
 function SkyBackground() {
   return (
     <div className="sky-background">
-      {/* Subtle Atmospheric Particles */}
       <div className="sky-particles">
         {STATIC_PARTICLES.map(p => (
           <div key={p.id} className="sky-particle" style={{ left: p.left, top: p.top, animationDelay: p.delay, animationDuration: p.duration }} />
         ))}
       </div>
       
-      {/* Background Layer (Small, slow, low opacity) */}
       <PixelCloudB size={0.5} top="8%" duration="160s" delay="0s" opacity={0.3} />
       <PixelCloudB size={0.8} top="5%" duration="140s" delay="-110s" opacity={0.4} reverse />
       <PixelCloudA size={0.6} top="25%" duration="180s" delay="-40s" opacity={0.4} reverse />
       <PixelCloudB size={0.7} top="65%" duration="150s" delay="-80s" opacity={0.3} />
       <PixelCloudA size={0.9} top="80%" duration="130s" delay="-10s" opacity={0.5} reverse />
       
-      {/* Midground Layer (Medium) */}
       <PixelCloudA size={1.0} top="15%" duration="120s" delay="-20s" opacity={0.6} />
       <PixelCloudB size={1.2} top="22%" duration="105s" delay="-75s" opacity={0.6} />
       <PixelCloudA size={1.4} top="38%" duration="90s" delay="-30s" opacity={0.75} />
       <PixelCloudB size={1.1} top="45%" duration="110s" delay="-60s" opacity={0.5} reverse />
       <PixelCloudA size={1.2} top="75%" duration="100s" delay="-85s" opacity={0.7} />
       
-      {/* Foreground Layer (Large, faster, high opacity) */}
       <PixelCloudB size={1.6} top="30%" duration="80s" delay="-15s" opacity={0.9} />
       <PixelCloudA size={1.8} top="55%" duration="95s" delay="-50s" opacity={1} />
       <PixelCloudB size={1.5} top="85%" duration="85s" delay="-90s" opacity={0.8} reverse />
 
-      {/* Birds */}
       <PixelBird size={0.9} top="12%" duration="60s" delay="-10s" />
       <PixelBird size={0.6} top="20%" duration="80s" delay="-50s" />
       <PixelBird size={1.2} top="28%" duration="45s" delay="-15s" reverse />
@@ -446,13 +437,13 @@ function Hero() {
               <span className="hero__status-dot" /> Open to Opportunities
             </div>
             <h1 className="hero__name">
-                 <span className="hero__accent">Sukumar BV</span>
+              Hi, I'm <span className="hero__accent">Sukumar BV</span>
             </h1>
             <p className="hero__tagline">
               An AI & Machine Learning engineer building sophisticated, intelligent systems that bridge complex technology with real-world impact.
             </p>
             <p className="hero__sub">
-              3rd-year B.E. student · CGPA 8.97 · Cambridge Institute of Technology
+              4th-year B.E. student · CGPA 8.88 · Cambridge Institute of Technology
             </p>
 
             <div className="hero__ctas">
@@ -599,6 +590,8 @@ function Projects() {
 }
 
 function ProjectCard({ project, index, onClick }) {
+  const isAQMS = project.id === "aqms";
+
   return (
     <motion.div
       className="project-card"
@@ -632,9 +625,11 @@ function ProjectCard({ project, index, onClick }) {
             Read Case Study <ArrowUpRight size={16} />
           </span>
           <div className="project-card__links" onClick={(e) => e.stopPropagation()}>
-            <a href={project.github} target="_blank" rel="noopener noreferrer" className="icon-link">
-              <Github size={18} />
-            </a>
+            {!isAQMS && (
+              <a href={project.github} target="_blank" rel="noopener noreferrer" className="icon-link">
+                <Github size={18} />
+              </a>
+            )}
             {project.live && (
               <a href={project.live} target="_blank" rel="noopener noreferrer" className="icon-link">
                 <ExternalLink size={18} />
@@ -648,6 +643,8 @@ function ProjectCard({ project, index, onClick }) {
 }
 
 function ProjectModal({ project, onClose }) {
+  const isAQMS = project.id === "aqms";
+
   useEffect(() => {
     const handler = (e) => { if (e.key === "Escape") onClose(); };
     document.addEventListener("keydown", handler);
@@ -723,9 +720,11 @@ function ProjectModal({ project, onClose }) {
           </div>
 
           <div className="modal__actions">
-            <a href={project.github} target="_blank" rel="noopener noreferrer" className="btn btn--primary">
-              <Github size={18} /> View Source Code
-            </a>
+            {!isAQMS && (
+              <a href={project.github} target="_blank" rel="noopener noreferrer" className="btn btn--primary">
+                <Github size={18} /> View Source Code
+              </a>
+            )}
             {project.live && (
               <a href={project.live} target="_blank" rel="noopener noreferrer" className="btn btn--outline">
                 <ExternalLink size={18} /> Live Demo
@@ -770,7 +769,7 @@ function Education() {
             <div className="edu-card__body">
               <div className="edu-card__meta">
                 <span className="edu-card__degree">Bachelor of Engineering</span>
-                <span className="edu-card__gpa">CGPA: 8.97 / 10</span>
+                <span className="edu-card__gpa">CGPA: 8.88 / 10</span>
               </div>
               <h3 className="edu-card__major">Artificial Intelligence &amp; Machine Learning</h3>
               <p className="edu-card__school">Cambridge Institute of Technology · Bengaluru, India</p>
