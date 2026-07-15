@@ -44,6 +44,35 @@ const PROJECTS = [
     featured: true,
   },
   {
+    id: "modelops-studio",
+    title: "ModelOps Studio",
+    subtitle: "End-to-End ML Lifecycle Platform",
+    date: "June 2026",
+    tags: ["MLOps", "FastAPI", "Deployed"],
+    category: "MLOps",
+    description:
+      "A lightweight, Vertex AI-inspired ModelOps platform that takes a dataset from upload through training, comparison, deployment, and production monitoring — all from one unified interface.",
+    problem:
+      "Most ML projects stop at a trained model in a notebook. Turning that model into something a team can actually promote, roll back, and monitor in production requires infrastructure most portfolio projects skip entirely.",
+    solution:
+      "Built a full-stack platform with dedicated services for dataset management, training, experiment tracking, registry, prediction, and monitoring, layered under both a server-rendered Jinja2 UI and a documented FastAPI JSON API sharing the same service layer.",
+    features: [
+      "Automated training across five algorithms with dynamic classification/regression detection and 3-fold cross-validation",
+      "Versioned experiments capturing metrics, hyperparameters, training time, and model size",
+      "GitHub-Releases-style model registry with promote / rollback / archive and downloadable artifacts",
+      "Drift detection using Kolmogorov-Smirnov and Population Stability Index tests with retrain recommendations",
+    ],
+    challenges: [
+      "Enforcing a single-active-production-model invariant per dataset across promote/rollback/archive operations",
+      "Keeping the free-tier Docker image small while supporting five different scikit-learn model families",
+    ],
+    impact: "Demonstrates the full MLOps lifecycle end-to-end — dataset to deployment to monitoring — in a single deployable service rather than just a trained model.",
+    tech: ["Python", "FastAPI", "Scikit-learn", "SQLAlchemy", "Docker", "Plotly", "SQLite"],
+    github: "https://github.com/SukumarBV/modelops-studio",
+    live: "https://modelops-studio.onrender.com",
+    featured: true,
+  },
+  {
     id: "traffic-mlops",
     title: "Automated Traffic Congestion MLOps",
     subtitle: "Production ML System",
@@ -98,7 +127,7 @@ const PROJECTS = [
     impact: "Enables any user to query relational databases in plain English — applicable across analytics, BI, and internal tools.",
     tech: ["Python", "FastAPI", "React", "Docker", "PostgreSQL", "Gemini AI"],
     github: "https://github.com/SukumarBV/NLPQueryEngine",
-    live: null,
+    live: "https://nlp-query-engine.onrender.com",
     featured: true,
   },
   {
