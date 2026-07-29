@@ -4,7 +4,8 @@ import {
   Github, Linkedin, Mail, ExternalLink, X, ChevronDown,
   Calendar, Code2, Cpu, Database, Globe, Terminal, Layers,
   Download, Menu, MapPin, Award, BookOpen, ArrowUpRight, 
-  Target, Lightbulb, CheckCircle, Flag, TrendingUp, Settings
+  Target, Lightbulb, CheckCircle, Flag, TrendingUp, Settings,
+  Briefcase
 } from "lucide-react";
 import "./App.css";
 
@@ -12,6 +13,21 @@ import "./App.css";
 const PHOTO_SRC = "me.jpeg";
 
 // ─── DATA ─────────────────────────────────────────────────────────────────────
+
+const WORK_EXPERIENCE = [
+  {
+    company: "VedNova AI Technologies LLP",
+    role: "Software Engineer Intern",
+    period: "July 2026 – July 2026",
+    location: "Remote",
+    points: [
+      "Diagnosed and resolved critical frontend-backend integration defects in a production Next.js, React, TypeScript, and Supabase application, directly improving application stability and end-user experience.",
+      "Shipped features end-to-end across both the customer-facing website and internal admin dashboard, resolving issues spanning REST API integration, PostgreSQL database queries, authentication flows, and UI rendering.",
+      "Performed full-stack debugging and validated CRUD workflows and backend connectivity, delivering production-ready fixes while collaborating through Git-based version control in an agile team environment.",
+    ],
+    tech: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Supabase", "PostgreSQL", "Git", "Cloudflare"],
+  },
+];
 
 const PROJECTS = [
   {
@@ -264,8 +280,8 @@ const CERTIFICATIONS = [
     icon: <Award size={24} />,
   },
   {
-    title: "Computer Graphics",
-    issuer: "NPTEL",
+    title: "AI Fluency: Framework and Foundations",
+    issuer: "Anthropic",
     icon: <Award size={24} />,
   },
 ];
@@ -353,7 +369,7 @@ function SkyBackground() {
 function useActiveSection() {
   const [active, setActive] = useState("home");
   useEffect(() => {
-    const sections = ["home", "about", "skills", "projects", "education", "contact"];
+    const sections = ["home", "about", "skills", "experience", "projects", "education", "contact"];
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((e) => { if (e.isIntersecting) setActive(e.target.id); });
@@ -390,6 +406,7 @@ function Navbar() {
     { id: "home", label: "Home" },
     { id: "about", label: "About" },
     { id: "skills", label: "Skills" },
+    { id: "experience", label: "Experience" },
     { id: "projects", label: "Projects" },
     { id: "education", label: "Education" },
     { id: "contact", label: "Contact" },
@@ -579,6 +596,62 @@ function Skills() {
                 {cat.items.map((item, j) => (
                   <span key={j} className="skill-tag">{item}</span>
                 ))}
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+// ─── EXPERIENCE ───────────────────────────────────────────────────────────────
+
+function Experience() {
+  return (
+    <section id="experience" className="section">
+      <div className="container">
+        <SectionHeader eyebrow="Career" title="Work Experience" />
+        <div className="exp__list">
+          {WORK_EXPERIENCE.map((exp, i) => (
+            <motion.div
+              key={i}
+              className="exp-card"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+            >
+              <div className="exp-card__icon">
+                <Briefcase size={28} />
+              </div>
+              <div className="exp-card__body">
+                <div className="exp-card__top">
+                  <div>
+                    <h3 className="exp-card__role">{exp.role}</h3>
+                    <p className="exp-card__company">{exp.company}</p>
+                  </div>
+                  <div className="exp-card__meta">
+                    <span className="exp-card__period">
+                      <Calendar size={14} /> {exp.period}
+                    </span>
+                    <span className="exp-card__location">
+                      <MapPin size={14} /> {exp.location}
+                    </span>
+                  </div>
+                </div>
+
+                <ul className="exp-card__points">
+                  {exp.points.map((p, j) => (
+                    <li key={j}>{p}</li>
+                  ))}
+                </ul>
+
+                <div className="exp-card__tech">
+                  {exp.tech.map((t, k) => (
+                    <span key={k} className="tech-badge">{t}</span>
+                  ))}
+                </div>
               </div>
             </motion.div>
           ))}
@@ -946,6 +1019,7 @@ export default function App() {
       <Hero />
       <About />
       <Skills />
+      <Experience />
       <Projects />
       <Education />
       <Contact />
